@@ -40,7 +40,9 @@ var ClothSimulator = function ClothSimulator(canvas) {
 			this.update();
 			this.render();
 			var that = this;
-			requestAnimationFrame(function(){that.renderLoop()});
+			requestAnimationFrame(function(){
+				that.renderLoop()
+			});
 		}
 		
 		// =======================================================================// 
