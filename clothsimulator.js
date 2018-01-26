@@ -19,19 +19,16 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.canvas.appendChild( this.renderer.domElement );
 		
-		var geometry = new THREE.PlaneBufferGeometry( 40, 40, 8 ,8);
-		var material = new THREE.MeshBasicMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
-		this.cloth = new THREE.Mesh( geometry, material );
-		this.scene.add(this.cloth);
+		this.cloth = new Cloth(40,40,7,7, this.renderer);
+		this.scene.add(this.cloth.object);
 
- 		console.log(this.cloth);
 		
 		// =======================================================================// 
 		// Method: Run the Simulator		        				     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.run = function(){
 			this.renderLoop();
-		}
+		};
 		
 		// =======================================================================// 
 		// Method: RenderLoopFunction        						     		  //
@@ -43,21 +40,21 @@ var ClothSimulator = function ClothSimulator(canvas) {
 			requestAnimationFrame(function(){
 				that.renderLoop()
 			});
-		}
+		};
 		
 		// =======================================================================// 
 		// Method: Render The Scene   	     						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.render = function(){
 			this.renderer.render(this.scene, this.camera);
-		}
+		};
 
 		// =======================================================================// 
 		// Method: Update all Variables	     						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.update = function(){
-			//do sth
-		}
+			this.cloth.update();
+		};
 };
 
 

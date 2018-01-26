@@ -7,15 +7,24 @@
 	</head>
 	<body>
 		<script src="vendor/three.js"></script>
+		<script src="vendor/jquery.min.js"></script>
 		<script src="vendor/GPUComputationRenderer.js"></script>
+		<script src="vendor/ShaderLoader.js"></script>
 		<script src='vendor/OrbitControls.js'></script>
 		<script src="clothsimulator.js"></script>
-		
+		<script src="cloth.js"></script>
+
 		<script>
 			var canvas = document.body;
-			var program = new ClothSimulator(canvas);
-			program.run();
+			var shaders = new ShaderLoader( 'shaders');
+  			shaders.load( 'position', 'POS' , 'fragment' );
+  			shaders.load( 'velocity', 'VEL' , 'fragment' );
+			shaders.shaderSetLoaded = function(){
+				var program = new ClothSimulator(canvas);
+				program.run();
+			}
+			
 		</script>
-		
+
 	</body>
 </html>
