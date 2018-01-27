@@ -1,17 +1,18 @@
 'use stric';
 
-var Cloth = function Cloth(width, height, segmentsX, segmentsY, renderer) {
+var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		// =======================================================================// 
 		// Initialising						        				     		  //
 		// =======================================================================//
 		
 		//Init Cloth-Object
-		var geometry = new THREE.PlaneBufferGeometry( width, height, segmentsX ,segmentsY);
+		var facesX = vertsX-1;
+		var facesY = vertsY -1; 
+		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
 		var material = new THREE.MeshBasicMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
 		this.object = new THREE.Mesh( geometry, material );
-
 		//Setup ComputationRenderer
-		this.gpuCompute = new GPUComputationRenderer(segmentsX+1, segmentsY+1, renderer);
+		this.gpuCompute = new GPUComputationRenderer(vertsX, vertsY, renderer);
 
 		//Init Textures used for computation
 		var dtPosition = this.gpuCompute.createTexture();
@@ -21,6 +22,7 @@ var Cloth = function Cloth(width, height, segmentsX, segmentsY, renderer) {
 		//Init Variables with corresponding Shader
 		this.positionVariable = this.gpuCompute.addVariable("texturePosition", shaders.fs.POS, dtPosition);
 		this.velocityVariable = this.gpuCompute.addVariable("textureVelocity", shaders.fs.VEL, dtVelocity);
+		console.log(this.positionVariable);
 
 		this.velocityVariable.wrapS = THREE.RepeatWrapping;
 		this.velocityVariable.wrapT = THREE.RepeatWrapping;
@@ -57,9 +59,9 @@ var Cloth = function Cloth(width, height, segmentsX, segmentsY, renderer) {
 			this.gpuCompute.compute();
 
 			//Draw new Values
-			var newPos = new Float32Array(64 * 4);
+			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
-			renderer.readRenderTargetPixels(target,0,0,8,8, newPos);
+			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
 			
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
 				this.object.geometry.attributes.position.array[ i+0 ] = newPos[ i+0 + i/3];
@@ -77,7 +79,7 @@ var Cloth = function Cloth(width, height, segmentsX, segmentsY, renderer) {
 		//This functions fills the positionTexture with the start vertices of the BufferObject.
 		function fillPositionTexture(texture, data){
 			tData = texture.image.data;
-			for(var i=0;  i < tData.length; i += 4){
+			for(var i=0;  i < tData.length-3; i += 4){
 				tData[ i+0 ] = data[ i+0 - (i/4) ];
 				tData[ i+1 ] = data[ i+1 - (i/4) ];
 				tData[ i+2 ] = data[ i+2 - (i/4) ];

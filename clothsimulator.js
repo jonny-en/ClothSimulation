@@ -6,7 +6,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// =======================================================================//
 
 		//Cloth Size. Amount of Vectors will be size*size. Should be power of 2.
-		const CLOTH_SIZE = 16;
+		var CLOTH_SIZE = 16;
 		
 		// =======================================================================// 
 		// Initialising						        				     		  //
@@ -26,7 +26,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.canvas.appendChild( this.renderer.domElement );
 		
-		this.cloth = new Cloth(40,40,CLOTH_SIZE-1,CLOTH_SIZE-1, this.renderer);
+		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 
 		this.last = 0;
@@ -43,8 +43,8 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// Method: RenderLoopFunction        						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.renderLoop = function(){
-			this.update();
 			this.render();
+			this.update();
 			var that = this;
 			requestAnimationFrame(function(){
 				that.renderLoop()
