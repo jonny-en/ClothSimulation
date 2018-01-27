@@ -1,10 +1,17 @@
 'use strict';
 
 var ClothSimulator = function ClothSimulator(canvas) {
+		// =======================================================================// 
+		// Constants     					        				     		  //
+		// =======================================================================//
 
+		//Cloth Size. Amount of Vectors will be size*size. Should be power of 2.
+		const CLOTH_SIZE = 16;
+		
 		// =======================================================================// 
 		// Initialising						        				     		  //
 		// =======================================================================//
+
 		this.canvas = canvas;
 		this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 3000 );
 		this.camera.position.z = 60;
@@ -19,10 +26,12 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.canvas.appendChild( this.renderer.domElement );
 		
-		this.cloth = new Cloth(40,40,7,7, this.renderer);
+		this.cloth = new Cloth(40,40,CLOTH_SIZE-1,CLOTH_SIZE-1, this.renderer);
 		this.scene.add(this.cloth.object);
 
-		
+		this.last = 0;
+		this.now = 0;
+
 		// =======================================================================// 
 		// Method: Run the Simulator		        				     		  //
 		// =======================================================================//
@@ -53,7 +62,17 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// Method: Update all Variables	     						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.update = function(){
-			this.cloth.update();
+			this.updateTime();
+			this.cloth.update(this.now, this.delta);
+		};
+
+		ClothSimulator.prototype.updateTime = function(){
+			this.now = performance.now();
+			this.delta = (this.now - this.last)/ 1000;
+			//Safety cap on large deltas
+			if(this.delta > 1){
+				this.delta = 1;
+			}
 		};
 };
 

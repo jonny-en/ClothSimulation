@@ -16,10 +16,12 @@
 
 		<script>
 			var canvas = document.body;
+			/* Load all shaders at the beginning */
 			var shaders = new ShaderLoader( 'shaders');
   			shaders.load( 'position', 'POS' , 'fragment' );
   			shaders.load( 'velocity', 'VEL' , 'fragment' );
 			shaders.shaderSetLoaded = function(){
+				/*start program when shaders loaded */
 				var program = new ClothSimulator(canvas);
 				program.run();
 			}
