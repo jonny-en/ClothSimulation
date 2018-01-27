@@ -19,13 +19,13 @@
 			/* Load all shaders at the beginning */
 			var shaders = new ShaderLoader( 'shaders');
   			shaders.load( 'position', 'POS' , 'fragment' );
-  			shaders.load( 'velocity', 'VEL' , 'fragment' );
+  			shaders.load( 'oldPosition', 'OLD_POS' , 'fragment' );
 			shaders.shaderSetLoaded = function(){
 				/*start program when shaders loaded */
 				var program = new ClothSimulator(canvas);
 				program.run();
 			}
-			
+
 		</script>
 
 	</body>
