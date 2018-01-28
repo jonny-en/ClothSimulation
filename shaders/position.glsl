@@ -45,6 +45,21 @@ void main()	{
 	}
 	vec3 force = gravityVec*ownMass + velocity*DAMPING;
 
+vec2 coord = vec2(0,-1);
+vec2 coordNeighbor = vec2(uv.x, uv.y + coord.y*(1.0/resolution.y));
+float restLength = 3.3333;
+vec3 p2 = texture2D(texturePosition, coordNeighbor).xyz;
+vec3 v2 = (p2 - texture2D(textureOldPosition, coordNeighbor).xyz)/delta;
+vec3 deltaP = position - p2;
+vec3 deltaV = velocity - v2;
+
+float dist = length(deltaP);
+
+float leftTerm = -ks * (dist-restLength);
+float rightTerm = kd * (dot(deltaV, deltaP)/dist);
+vec3 springForce = (leftTerm + rightTerm)*normalize(deltaP);
+
+force += springForce;
 
 //Calculating springforces (NOT WORKING)
 	/*for (int k = 0; k < 4; k++){
@@ -53,16 +68,15 @@ void main()	{
 		float j = coord.y;
 
 		vec2 coordNeighbor = vec2(uv.x + coord.x*1.0/resolution.x, uv.y + coord.y*1.0/resolution.x);
-		vec2 inv_cloth = vec2(4.0,4.0);
-		float rest_length = length(coord*inv_cloth);
+		float rest_length = 3.3333;
 
 		vec3 p2 = texture2D(texturePosition, coordNeighbor).xyz;
 		vec3 v2 = (p2 - texture2D(textureOldPosition, coordNeighbor).xyz)/delta;
 		vec3 deltaP = position - p2;
 		vec3 deltaV = velocity - v2;
 		float dist = length(deltaP);
-		if(dist > 1.0){
-			dist = 1.2;
+		if(dist > 3.5){
+			dist = 3.5;
 		}
 
 		float leftTerm = -ks * (dist-rest_length);
@@ -76,7 +90,12 @@ if(ownMass > 0.0){
 	 acceleration = force/ownMass;
 }
 
-	vec3 newPosition =  position * 2.0 - oldPosition + acceleration * delta *delta;
 
-	gl_FragColor = vec4(newPosition, 1 );
+
+	vec3 newPosition =  position * 2.0 - oldPosition + acceleration * delta *delta;
+	// restrict bending 
+if(dist > restLength * 1.5){
+	newPosition = position;
+}
+		gl_FragColor = vec4(newPosition,1 );
 }
