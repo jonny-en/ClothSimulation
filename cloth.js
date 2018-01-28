@@ -1,13 +1,13 @@
 'use stric';
 
 var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
-		// =======================================================================// 
+		// =======================================================================//
 		// Initialising						        				     		  //
 		// =======================================================================//
-		
+
 		//Init Cloth-Object
 		var facesX = vertsX-1;
-		var facesY = vertsY -1; 
+		var facesY = vertsY -1;
 		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
 		var material = new THREE.MeshBasicMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
 		this.object = new THREE.Mesh( geometry, material );
@@ -16,29 +16,33 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 
 		//Init Textures used for computation
 		var dtPosition = this.gpuCompute.createTexture();
-		var dtVelocity = this.gpuCompute.createTexture();
+		var dtOldPosition = this.gpuCompute.createTexture();
 		fillPositionTexture(dtPosition, this.object.geometry.attributes.position.array);
-
+		fillPositionTexture(dtOldPosition, this.object.geometry.attributes.position.array);
 		//Init Variables with corresponding Shader
 		this.positionVariable = this.gpuCompute.addVariable("texturePosition", shaders.fs.POS, dtPosition);
-		this.velocityVariable = this.gpuCompute.addVariable("textureVelocity", shaders.fs.VEL, dtVelocity);
+		this.oldPositionVariable = this.gpuCompute.addVariable("textureOldPosition", shaders.fs.OLD_POS, dtOldPosition);
+		console.log(this.positionVariable);
 
-		this.velocityVariable.wrapS = THREE.RepeatWrapping;
-		this.velocityVariable.wrapT = THREE.RepeatWrapping;
+		this.oldPositionVariable.wrapS = THREE.RepeatWrapping;
+		this.oldPositionVariable.wrapT = THREE.RepeatWrapping;
 		this.positionVariable.wrapS = THREE.RepeatWrapping;
 		this.positionVariable.wrapT = THREE.RepeatWrapping;
 
 		//Set Variable Dependencies
-		this.gpuCompute.setVariableDependencies( this.velocityVariable, [ this.positionVariable, this.velocityVariable ] );
-		this.gpuCompute.setVariableDependencies( this.positionVariable, [ this.positionVariable, this.velocityVariable ] );
+		this.gpuCompute.setVariableDependencies( this.oldPositionVariable, [ this.positionVariable, this.oldPositionVariable ] );
+		this.gpuCompute.setVariableDependencies( this.positionVariable, [ this.positionVariable, this.oldPositionVariable ] );
 
 		//Init Uniform Values
 		this.positionUniforms = this.positionVariable.material.uniforms;
-		this.velocityUniforms = this.velocityVariable.material.uniforms;
 		this.positionUniforms.time = { value: 0.0 };
 		this.positionUniforms.delta = { value: 0.0 };
-		this.velocityUniforms.time = { value: 1.0 };
-		this.velocityUniforms.delta = { value: 0.0 };
+		this.positionUniforms.mass = {value: 1.0};
+		this.positionUniforms.gravity = {value: -0.00981};
+		this.positionUniforms.DAMPING = {value: -0.0125};
+		this.positionUniforms.KsStructur = {value: 50.75};
+		this.positionUniforms.KdStructur = {value: -0.25};
+
 
 		//Init ComputationRenderer
 		var error = this.gpuCompute.init();
@@ -46,7 +50,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 			console.error(error);
 		}
 
-		// =======================================================================// 
+		// =======================================================================//
 		// Update function					        				     		  //
 		// =======================================================================//
 		Cloth.prototype.update = function(now, delta){
@@ -61,7 +65,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
 			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
-			
+
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
 				this.object.geometry.attributes.position.array[ i+0 ] = newPos[ i+0 + i/3];
 				this.object.geometry.attributes.position.array[ i+1 ] = newPos[ i+1 + i/3];
@@ -71,7 +75,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		};
 
 
-		// =======================================================================// 
+		// =======================================================================//
 		// Helper-functions	(not part of object)       				     		  //
 		// =======================================================================//
 
