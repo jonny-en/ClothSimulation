@@ -1,6 +1,7 @@
 uniform float time;
 uniform float delta;
 uniform float DAMPING;	// Damping coefficent
+
 uniform float mass;
 uniform float gravity;
 uniform float KsStructur, KdStructur; //Spring coefficents
@@ -35,17 +36,24 @@ void main()	{
 	vec3 oldPosition = texture2D( textureOldPosition, uv ).xyz;
 	vec3 gravityVec = vec3(0.0,-0.00981,0.0);
 	vec3 velocity = (position - oldPosition) / delta;
-	vec3 force = gravityVec*ownMass + velocity*DAMPING;
 	float ks = 0.0, kd=0.0;
 
+	//fix top row so it does not move
+	if(uv.y == 1.0/(2.0*resolution.y)){
+		ownMass = 0.0;
+		velocity = vec3(0.0);
+	}
+	vec3 force = gravityVec*ownMass + velocity*DAMPING;
+
+
 //Calculating springforces (NOT WORKING)
-/*	for (int k = 0; k < 4; k++){
+	/*for (int k = 0; k < 4; k++){
 		vec2 coord = getNeighbor(k, ks, kd);
 		float i = coord.x;
 		float j = coord.y;
 
-		vec2 coordNeighbor = vec2(position.x + i, position.y +j)* (1.0/16.0);
-		vec2 inv_cloth = vec2(4.0/16.0,4.0/16.0);
+		vec2 coordNeighbor = vec2(uv.x + coord.x*1.0/resolution.x, uv.y + coord.y*1.0/resolution.x);
+		vec2 inv_cloth = vec2(4.0,4.0);
 		float rest_length = length(coord*inv_cloth);
 
 		vec3 p2 = texture2D(texturePosition, coordNeighbor).xyz;
@@ -53,6 +61,9 @@ void main()	{
 		vec3 deltaP = position - p2;
 		vec3 deltaV = velocity - v2;
 		float dist = length(deltaP);
+		if(dist > 1.0){
+			dist = 1.2;
+		}
 
 		float leftTerm = -ks * (dist-rest_length);
 		float rightTerm = kd * (dot(deltaV, deltaP)/dist);
@@ -60,8 +71,10 @@ void main()	{
 		force += springForce;
 	}
 */
-	vec3 acceleration = force/ownMass;
-
+vec3 acceleration = vec3(0.0);
+if(ownMass > 0.0){
+	 acceleration = force/ownMass;
+}
 
 	vec3 newPosition =  position * 2.0 - oldPosition + acceleration * delta *delta;
 
