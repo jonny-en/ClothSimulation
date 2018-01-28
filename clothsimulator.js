@@ -30,7 +30,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 
-		this.ballthrower = new BallThrower(0, 0, 20, 5, this.scene, this.renderer);
+		this.ballthrower = new BallThrower(0, 0, 50, 2, this.scene, this.renderer);
 
 		this.last = 0;
 		this.now = 0;

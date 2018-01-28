@@ -32,7 +32,7 @@ void main()	{
 			position =  position * 2.0 - oldPosition + acceleration * delta * delta;
 		}
 		else{
-			position =  position + vec3(0.,0.,-1);
+			position =  position + vec3(0.,0.,-2);
 		}
 		w = 1.;
 	}
