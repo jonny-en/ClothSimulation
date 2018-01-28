@@ -17,7 +17,8 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.camera.position.z = 60;
 		
 		this.controls = new THREE.OrbitControls(this.camera);
-		
+		window.addEventListener("keydown", onKeyDown.bind(this), false);
+
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( 0x111111 );
 
@@ -28,6 +29,8 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
+
+		this.ballthrower = new BallThrower(0, 0, 20, 5, this.scene, this.renderer);
 
 		this.last = 0;
 		this.now = 0;
@@ -64,6 +67,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		ClothSimulator.prototype.update = function(){
 			this.updateTime();
 			this.cloth.update(this.now, this.delta);
+			this.ballthrower.update(this.now, this.delta);
 		};
 
 		ClothSimulator.prototype.updateTime = function(){
@@ -73,6 +77,13 @@ var ClothSimulator = function ClothSimulator(canvas) {
 			if(this.delta > 1){
 				this.delta = 1;
 			}
+		};
+
+		function onKeyDown(event){
+   			var keyCode = event.which;
+    		if (keyCode == 87) {
+    			this.ballthrower.throwBall();
+   			 }  
 		};
 };
 

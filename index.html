@@ -13,6 +13,7 @@
 		<script src='vendor/OrbitControls.js'></script>
 		<script src="clothsimulator.js"></script>
 		<script src="cloth.js"></script>
+		<script src="ballthrower.js"></script>
 
 		<script>
 			var canvas = document.body;
@@ -20,6 +21,8 @@
 			var shaders = new ShaderLoader( 'shaders');
   			shaders.load( 'position', 'POS' , 'fragment' );
   			shaders.load( 'velocity', 'VEL' , 'fragment' );
+  			shaders.load( 'position_balls', 'POS_BALLS' , 'fragment' );
+  			shaders.load( 'oldposition_balls', 'OLDPOS_BALLS' , 'fragment' );
 			shaders.shaderSetLoaded = function(){
 				/*start program when shaders loaded */
 				var program = new ClothSimulator(canvas);

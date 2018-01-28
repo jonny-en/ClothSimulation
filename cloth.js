@@ -22,7 +22,6 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		//Init Variables with corresponding Shader
 		this.positionVariable = this.gpuCompute.addVariable("texturePosition", shaders.fs.POS, dtPosition);
 		this.velocityVariable = this.gpuCompute.addVariable("textureVelocity", shaders.fs.VEL, dtVelocity);
-		console.log(this.positionVariable);
 
 		this.velocityVariable.wrapS = THREE.RepeatWrapping;
 		this.velocityVariable.wrapT = THREE.RepeatWrapping;
