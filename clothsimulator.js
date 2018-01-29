@@ -1,23 +1,23 @@
 'use strict';
 
 var ClothSimulator = function ClothSimulator(canvas) {
-		// =======================================================================// 
+		// =======================================================================//
 		// Constants     					        				     		  //
 		// =======================================================================//
 
 		//Cloth Size. Amount of Vectors will be size*size. Should be power of 2.
 		var CLOTH_SIZE = 16;
-		
-		// =======================================================================// 
+
+		// =======================================================================//
 		// Initialising						        				     		  //
 		// =======================================================================//
 
 		this.canvas = canvas;
 		this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 3000 );
 		this.camera.position.z = 60;
-		
+
 		this.controls = new THREE.OrbitControls(this.camera);
-		
+
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( 0x111111 );
 
@@ -25,21 +25,21 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.canvas.appendChild( this.renderer.domElement );
-		
+
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 
 		this.last = 0;
 		this.now = 0;
 
-		// =======================================================================// 
+		// =======================================================================//
 		// Method: Run the Simulator		        				     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.run = function(){
 			this.renderLoop();
 		};
-		
-		// =======================================================================// 
+
+		// =======================================================================//
 		// Method: RenderLoopFunction        						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.renderLoop = function(){
@@ -50,15 +50,15 @@ var ClothSimulator = function ClothSimulator(canvas) {
 				that.renderLoop()
 			});
 		};
-		
-		// =======================================================================// 
+
+		// =======================================================================//
 		// Method: Render The Scene   	     						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.render = function(){
 			this.renderer.render(this.scene, this.camera);
 		};
 
-		// =======================================================================// 
+		// =======================================================================//
 		// Method: Update all Variables	     						     		  //
 		// =======================================================================//
 		ClothSimulator.prototype.update = function(){
@@ -75,5 +75,3 @@ var ClothSimulator = function ClothSimulator(canvas) {
 			}
 		};
 };
-
-

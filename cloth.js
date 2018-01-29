@@ -42,6 +42,10 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.DAMPING = {value: -0.0125};
 		this.positionUniforms.KsStructur = {value: 50.75};
 		this.positionUniforms.KdStructur = {value: -0.25};
+		this.positionUniforms.KsShear = {value: 50.75};
+		this.positionUniforms.Kdshear = {value: -0.25};
+		this.positionUniforms.KsBend = {value: 50.95};
+		this.positionUniforms.KdBend = {value: -0.25};
 
 
 		//Init ComputationRenderer
