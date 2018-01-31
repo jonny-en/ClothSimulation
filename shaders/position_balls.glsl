@@ -1,9 +1,15 @@
 uniform float time;
 uniform float delta;
+
 uniform float newBallIndex;
+
 uniform float originX;
 uniform float originY;
 uniform float originZ;
+
+uniform float destinationX;
+uniform float destinationY;
+uniform float destinationZ;
 
 void main()	{
 	
@@ -26,13 +32,11 @@ void main()	{
 			float mass = 30.;
 			vec3 oldPosition = texture2D( textureOldPosition, uv ).xyz;
 			vec3 gravity = vec3(0.,-0.00981,0.);
-			vec3 velocity = (position - oldPosition)/ delta;
-			vec3 force = gravity * mass;
-			vec3 acceleration = force/mass; 
-			position =  position * 2.0 - oldPosition + acceleration * delta * delta;
+			position =  position * 2.0 - oldPosition + gravity * delta * delta;
 		}
 		else{
-			position =  position + vec3(0.,0.,-2);
+			float throwVectorY =  0.0;
+			position =  position + vec3((destinationX-originX)/50.,(destinationY-originY)/60.+.2,(destinationZ-originZ)/50.);
 		}
 		w = 1.;
 	}

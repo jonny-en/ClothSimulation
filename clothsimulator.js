@@ -17,7 +17,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.camera.position.z = 60;
 		
 		this.controls = new THREE.OrbitControls(this.camera);
-		window.addEventListener("keydown", onKeyDown.bind(this), false);
+		window.addEventListener("mousedown", onMouseDown.bind(this), false);
 
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( 0x111111 );
@@ -31,6 +31,9 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.scene.add(this.cloth.object);
 
 		this.ballthrower = new BallThrower(0, 0, 50, 2, this.scene, this.renderer);
+		this.raycaster = new THREE.Raycaster();
+		this.mouse = new THREE.Vector2();
+
 
 		this.last = 0;
 		this.now = 0;
@@ -66,7 +69,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// =======================================================================//
 		ClothSimulator.prototype.update = function(){
 			this.updateTime();
-			this.cloth.update(this.now, this.delta);
+			//this.cloth.update(this.now, this.delta);
 			this.ballthrower.update(this.now, this.delta);
 		};
 
@@ -79,11 +82,14 @@ var ClothSimulator = function ClothSimulator(canvas) {
 			}
 		};
 
-		function onKeyDown(event){
-   			var keyCode = event.which;
-    		if (keyCode == 87) {
-    			this.ballthrower.throwBall();
-   			 }  
+		function onMouseDown(event){
+   			this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+   			this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+   			this.raycaster.setFromCamera(this.mouse, this.camera);
+   			var intersect = this.raycaster.intersectObject( this.cloth.object );
+   			if(intersect.length != 0){
+   				this.ballthrower.throwBallTo(intersect[0].point);
+   			}
 		};
 };
 

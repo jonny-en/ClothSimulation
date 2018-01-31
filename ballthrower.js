@@ -34,7 +34,9 @@ var BallThrower = function BallThrower(posX, posY, posZ, ballRadius, scene, rend
 		this.positionUniforms.originX = {value: this.origin.x};
 		this.positionUniforms.originY = {value: this.origin.y};
 		this.positionUniforms.originZ = {value: this.origin.z};		
-
+		this.positionUniforms.destinationX = {value: 0.0};
+		this.positionUniforms.destinationY = {value: 0.0};
+		this.positionUniforms.destinationZ = {value: 0.0};
 		var error = this.gpuCompute.init();
 		if( error !== null){
 			console.error(error);
@@ -62,13 +64,16 @@ var BallThrower = function BallThrower(posX, posY, posZ, ballRadius, scene, rend
 
 		};
 
-		BallThrower.prototype.throwBall = function(){
-			var newIndex = ballsThrown%(TEX_SIZE*TEX_SIZE);
+		BallThrower.prototype.throwBallTo = function(destination){
+			this.positionUniforms.destinationX.value = destination.x;
+			this.positionUniforms.destinationY.value = destination.y;
+			this.positionUniforms.destinationZ.value = destination.z;
+
 			if(ballsThrown < TEX_SIZE*TEX_SIZE){
 				addSphere(this.spheres,this.scene,this.origin);
 			}
-				this.positionUniforms.newBallIndex.value = newIndex;
-				ballsThrown++;
+			this.positionUniforms.newBallIndex.value = ballsThrown%(TEX_SIZE*TEX_SIZE);
+			ballsThrown++;
 		}
 
 		// =======================================================================// 
