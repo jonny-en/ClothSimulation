@@ -42,6 +42,10 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.DAMPING = {value: -0.0125};
 		this.positionUniforms.KsStructur = {value: 50.75};
 		this.positionUniforms.KdStructur = {value: -0.25};
+		this.positionUniforms.KsShear = {value: 50.75};
+		this.positionUniforms.Kdshear = {value: -0.25};
+		this.positionUniforms.KsBend = {value: 50.95};
+		this.positionUniforms.KdBend = {value: -0.25};
 
 
 		//Init ComputationRenderer
@@ -65,7 +69,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
 			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
-
+			console.log(this.object.geometry.attributes.position.array);
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
 				this.object.geometry.attributes.position.array[ i+0 ] = newPos[ i+0 + i/3];
 				this.object.geometry.attributes.position.array[ i+1 ] = newPos[ i+1 + i/3];
