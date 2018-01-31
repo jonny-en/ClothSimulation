@@ -3,13 +3,9 @@ uniform float delta;
 
 uniform float newBallIndex;
 
-uniform float originX;
-uniform float originY;
-uniform float originZ;
+uniform vec3 origin;
 
-uniform float destinationX;
-uniform float destinationY;
-uniform float destinationZ;
+uniform vec3 destination;
 
 void main()	{
 	
@@ -24,7 +20,7 @@ void main()	{
 	bool sameU = (uv.x == uNew);
 	bool sameV = (uv.y == vNew);
 	if(sameU && sameV){
-	 	position = vec3(originX,originY,originZ);
+	 	position = vec3(origin.x,origin.y,origin.z);
 	 	w = -1.;
 	}
 	else{
@@ -36,7 +32,7 @@ void main()	{
 		}
 		else{
 			float throwVectorY =  0.0;
-			position =  position + vec3((destinationX-originX)/50.,(destinationY-originY)/60.+.2,(destinationZ-originZ)/50.);
+			position =  position + vec3((destination.x-origin.x)/50.,(destination.y-origin.y)/60.+.2,(destination.z-origin.z)/50.);
 		}
 		w = 1.;
 	}

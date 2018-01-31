@@ -28,15 +28,15 @@ var BallThrower = function BallThrower(posX, posY, posZ, ballRadius, scene, rend
 		this.oldPositionVariable.wrapT = THREE.RepeatWrapping;
 
 		this.positionUniforms = this.positionVariable.material.uniforms;
+		
 		this.positionUniforms.time = { value: 0.0 };
 		this.positionUniforms.delta = { value: 0.0 };
+		
 		this.positionUniforms.newBallIndex = {value: -1};
-		this.positionUniforms.originX = {value: this.origin.x};
-		this.positionUniforms.originY = {value: this.origin.y};
-		this.positionUniforms.originZ = {value: this.origin.z};		
-		this.positionUniforms.destinationX = {value: 0.0};
-		this.positionUniforms.destinationY = {value: 0.0};
-		this.positionUniforms.destinationZ = {value: 0.0};
+		
+		this.positionUniforms.origin = { type: "v3", value: new THREE.Vector3(this.origin.x, this.origin.y, this.origin.z)};
+		this.positionUniforms.destination = { type: "v3", value: new THREE.Vector3( 0, 0, 0 )};
+
 		var error = this.gpuCompute.init();
 		if( error !== null){
 			console.error(error);
@@ -65,9 +65,7 @@ var BallThrower = function BallThrower(posX, posY, posZ, ballRadius, scene, rend
 		};
 
 		BallThrower.prototype.throwBallTo = function(destination){
-			this.positionUniforms.destinationX.value = destination.x;
-			this.positionUniforms.destinationY.value = destination.y;
-			this.positionUniforms.destinationZ.value = destination.z;
+			this.positionUniforms.destination.value.set(destination.x, destination.y, destination.z);
 
 			if(ballsThrown < TEX_SIZE*TEX_SIZE){
 				addSphere(this.spheres,this.scene,this.origin);
