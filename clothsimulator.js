@@ -71,7 +71,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// =======================================================================//
 		ClothSimulator.prototype.update = function(){
 			this.updateTime();
-			//this.cloth.update(this.now, this.delta);
+			this.cloth.update(this.now, this.delta);
 			this.ballthrower.update(this.now, this.delta);
 		};
 
