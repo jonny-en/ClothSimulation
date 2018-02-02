@@ -6,26 +6,41 @@ uniform float mass;
 uniform float gravity;
 uniform float KsStructur, KdStructur, KsShear, KdShear, KsBend, KdBend; //Spring coefficents
 
-// find neighbor for springforce calculation
-vec2 getNeighbor(int n, out float ks, out float kd){
-	if(n<4){
-		ks = KsStructur;
-		kd = KdStructur;
-	}
+vec3 calculateTranslation(vec3 p1,vec3 p2,float restLength){
+	vec3 dist = p1 - p2;
+	float dAbs = length(dist);
+	float s = (restLength - dAbs)/dAbs;
 
-	if(n == 0){
-			return vec2(1,0);
-	}
-	if(n == 1){
-			return vec2(0,-1);
-	}
-	if(n ==2){
-			return vec2(-1,0);
-	}
-	if(n == 3){
-			return vec2(0,1);
+	vec3 t = dist * 0.5 * s;
+	return t;
+}
 
-}}
+vec3 checkConstraints(vec2 uv, vec3 position){
+	vec3 t = vec3(0.0);
+	vec3 p2 = position;
+	if(!(uv.x == 1./(2.*resolution.x))) // left border of mesh
+	{
+		p2 = texture2D(texturePosition, vec2(uv.x-(1.0/resolution.x),uv.y)).xyz;
+		t += calculateTranslation(position, p2, 3.3333);
+	}
+	if(!(uv.x == (1.0-1./(2.*resolution.x)))) // right border of mesh
+	{
+		p2 = texture2D(texturePosition, vec2(uv.x+(1.0/resolution.x),uv.y)).xyz;
+		t += calculateTranslation(position, p2, 3.3333);
+	}
+	if(!(uv.y == (1.0-1./(2.*resolution.y)))) // bottom border of mesh
+	{
+		p2 = texture2D(texturePosition, vec2(uv.x,uv.y+(1.0/resolution.y))).xyz;
+		t += calculateTranslation(position, p2, 3.3333);
+	}
+	if(!(uv.y == 1./(2.*resolution.y))) // bottom border of mesh
+	{
+		p2 = texture2D(texturePosition, vec2(uv.x,uv.y-(1.0/resolution.y))).xyz;
+		t += calculateTranslation(position, p2, 3.3333);
+	}
+	return t;
+}
+
 
 void main()	{
 
@@ -33,56 +48,34 @@ void main()	{
 	float ownMass = mass;
 	vec3 position = texture2D( texturePosition, uv ).xyz;
 	vec3 oldPosition = texture2D( textureOldPosition, uv ).xyz;
-	vec3 gravityVec = vec3(0.0,gravity,0.0);
+	vec3 gravityVec = vec3(0.0009,-0.000981,-0.0009);
 	vec3 velocity = (position - oldPosition) / delta;
-	float ks = 0.0, kd=0.0;
-	vec2 inv_size = vec2(4.0/resolution.x,4.0/resolution.y);
+
+
 
 	//fix top row so it does not move
-	 if((uv.y == 1.0/(2.0*resolution.y)) ){
-	 	ownMass = 0.0;
-	 }
+
 
 
 
 	vec3 force = gravityVec*ownMass + velocity*DAMPING;
 
 
-//Calculating springforces (NOT WORKING)
-	/*for (int k = 0; k < 4; k++){
-		vec2 coord = getNeighbor(k, ks, kd);
-		float i = coord.x;
-		float j = coord.y;
 
-		vec2 coordNeighbor = vec2(uv.x + coord.x*1.0/resolution.x, uv.y + coord.y*1.0/resolution.x);
-		float rest_length = 3.3333;
 
-		vec3 p2 = texture2D(texturePosition, coordNeighbor).xyz;
-		vec3 v2 = (p2 - texture2D(textureOldPosition, coordNeighbor).xyz)/delta;
-		vec3 deltaP = position - p2;
-		vec3 deltaV = velocity - v2;
-		float dist = length(deltaP);
-		if(dist > 3.5){
-			dist = 3.5;
-		}
+vec3 acceleration = force/ownMass;
 
-		float leftTerm = -ks * (dist-rest_length);
-		float rightTerm = kd * (dot(deltaV, deltaP)/dist);
-		vec3 springForce = (leftTerm + rightTerm)*normalize(deltaP);
-		force += springForce;
+
+
+	vec3 newPosition = position;
+	if(!(uv.y == 1.0/(2.0*resolution.y) && (uv.x == 1.0/(2.0*resolution.x)||uv.x == (1.- 1.0/(2.0*resolution.x)))) ){
+		vec3 t = checkConstraints(uv, position);
+ 	 position += t*0.5;
+	 newPosition =  (position * 2.0 - oldPosition + acceleration * delta *delta);
+
+
 	}
-*/
 
-vec3 acceleration = vec3(0.0);
-if(ownMass > 0.0){
-	 acceleration = force/ownMass;
-}
-
-
-
-
-	vec3 newPosition =  (position * 2.0 - oldPosition + acceleration * delta *delta);
-	//restrict bending
 
 		gl_FragColor = vec4(newPosition,1 );
 }

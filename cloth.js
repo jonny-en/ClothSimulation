@@ -22,7 +22,6 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		//Init Variables with corresponding Shader
 		this.positionVariable = this.gpuCompute.addVariable("texturePosition", shaders.fs.POS, dtPosition);
 		this.oldPositionVariable = this.gpuCompute.addVariable("textureOldPosition", shaders.fs.OLD_POS, dtOldPosition);
-		console.log(this.positionVariable);
 
 		this.oldPositionVariable.wrapS = THREE.RepeatWrapping;
 		this.oldPositionVariable.wrapT = THREE.RepeatWrapping;
@@ -69,7 +68,6 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
 			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
-			console.log(this.object.geometry.attributes.position.array);
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
 				this.object.geometry.attributes.position.array[ i+0 ] = newPos[ i+0 + i/3];
 				this.object.geometry.attributes.position.array[ i+1 ] = newPos[ i+1 + i/3];
