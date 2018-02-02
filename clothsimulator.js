@@ -51,8 +51,6 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.scene.add(lightB);
 
 
-
-
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 
@@ -63,6 +61,10 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.last = 0;
 		this.now = 0;
 
+
+		this.gui = new dat.GUI();
+		this.gui.add(this.cloth.object.material, 'wireframe');
+		this.gui.addColor(this.cloth, 'color'); 
 		// =======================================================================//
 		// Method: Run the Simulator		        				     		  //
 		// =======================================================================//
