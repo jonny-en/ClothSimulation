@@ -15,6 +15,28 @@ vec3 calculateTranslation(vec3 p1,vec3 p2,float restLength){
 	return t;
 }
 
+vec3 solveCollisions(vec3 position, vec2 uv){
+
+	float marble = restLenghts.x/2.0;
+	vec3 p1 = position;
+	vec3 newPosition;
+		for(int i = 0; i <int(resolution.x); i++){
+			for(int j = 0; j <int(resolution.y); j++)
+			{
+				vec2 tempUV = vec2(float(i)/(resolution.x) + (1./(resolution.x*2.)) ,
+				float(j)/(resolution.y) + (1./(resolution.y*2.)));
+				if(!(uv == tempUV)){
+				vec3 p2 = texture2D(texturePosition, tempUV).xyz;
+				vec3 dist = p1 - p2;
+				float dAbs = length(dist);
+				if(dAbs < 2.*marble){
+					newPosition = position - normalize(dist)*(marble-dAbs);
+				}}
+			}
+		}
+		return newPosition;
+}
+
 vec3 checkConstraints(vec2 uv, vec3 position){
 	vec3 t = vec3(0.0);
 	vec3 p2 = position;
@@ -126,10 +148,11 @@ vec3 acceleration = force/ownMass;
 
 	vec3 newPosition = position;
 	if(!(uv.y == 1.0/(2.0*resolution.y) && (uv.x == 1.0/(2.0*resolution.x)||uv.x == (1.- 1.0/(2.0*resolution.x)))) ){
-		vec3 t = checkConstraints(uv, position);
-		force += t/10.;
-		acceleration = force/ownMass;
-	 newPosition =  (position * 2.0 - oldPosition + acceleration * delta *delta);
+		newPosition =  (position * 2.0 - oldPosition + acceleration * delta *delta);
+		newPosition = solveCollisions(newPosition,uv);
+
+		vec3 t = checkConstraints(uv, newPosition);
+		newPosition += t/10.;
 
 
 	}
