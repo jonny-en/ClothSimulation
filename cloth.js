@@ -44,7 +44,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.mass = {value: 1.0};
 		this.positionUniforms.gravity = {value: -0.00981};
 		this.positionUniforms.DAMPING = {value: -0.0125};
-		
+
 
 		var restX = width/facesX;
 		var restY = width/facesY;
