@@ -4,7 +4,6 @@ uniform float DAMPING;	// Damping coefficent
 
 uniform float mass;
 uniform float gravity;
-<<<<<<< Updated upstream
 uniform float KsStructur, KdStructur, KsShear, KdShear, KsBend, KdBend; //Spring coefficents
 
 vec3 calculateTranslation(vec3 p1,vec3 p2,float restLength){
@@ -41,8 +40,7 @@ vec3 checkConstraints(vec2 uv, vec3 position){
 	}
 	return t;
 }
-=======
->>>>>>> Stashed changes
+
 
 
 void main()	{
