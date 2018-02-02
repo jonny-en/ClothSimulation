@@ -29,6 +29,18 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		this.canvas.appendChild( this.renderer.domElement );
 
+		var lightFL = new THREE.PointLight( 0xffffff, .7);
+		lightFL.position.set(-30,0,30);
+		this.scene.add(lightFL);
+
+		var lightFR = new THREE.PointLight( 0xffffff, .2);
+		lightFR.position.set(30,0,30);
+		this.scene.add(lightFR);
+
+		var lightB = new THREE.PointLight( 0xffffff, .6 );
+		lightB.position.set(-15,0,-15);
+		this.scene.add(lightB);
+
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 

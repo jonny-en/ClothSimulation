@@ -9,7 +9,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		var facesX = vertsX-1;
 		var facesY = vertsY -1;
 		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
-		var material = new THREE.MeshBasicMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
+		var material = new THREE.MeshPhongMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
 		this.object = new THREE.Mesh( geometry, material );
 		//Setup ComputationRenderer
 		this.gpuCompute = new GPUComputationRenderer(vertsX, vertsY, renderer);
@@ -45,7 +45,12 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.Kdshear = {value: -0.25};
 		this.positionUniforms.KsBend = {value: 50.95};
 		this.positionUniforms.KdBend = {value: -0.25};
-
+		
+		var restX = width/facesX;
+		var restY = width/facesY;
+		var restDiagonal = Math.sqrt( restX * restX + restY * restY);
+		console.log(restDiagonal);
+		this.positionUniforms.restLenghts = {type: "v3", value: new THREE.Vector3( restX, restY, restDiagonal)};
 
 		//Init ComputationRenderer
 		var error = this.gpuCompute.init();

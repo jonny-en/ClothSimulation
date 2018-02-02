@@ -48,7 +48,7 @@ void main()	{
 	float ownMass = mass;
 	vec3 position = texture2D( texturePosition, uv ).xyz;
 	vec3 oldPosition = texture2D( textureOldPosition, uv ).xyz;
-	vec3 gravityVec = vec3(0.0009,-0.000981,-0.0009);
+	vec3 gravityVec = vec3(0.000,-0.000981,-0.0009);
 	vec3 velocity = (position - oldPosition) / delta;
 
 
