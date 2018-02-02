@@ -6,7 +6,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// =======================================================================//
 
 		//Cloth Size. Amount of Vectors will be size*size. Should be power of 2.
-		var CLOTH_SIZE = 16;
+		var CLOTH_SIZE = 32;
 
 		// =======================================================================//
 		// Initialising						        				     		  //
