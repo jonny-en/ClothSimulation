@@ -9,8 +9,10 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		var facesX = vertsX-1;
 		var facesY = vertsY -1;
 		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
-		var material = new THREE.MeshPhongMaterial( {wireframe: true, color: 0xffff00, side: THREE.DoubleSide} );
+		var material = new THREE.MeshPhongMaterial( {wireframe: false, color: 0xffff00, side: THREE.DoubleSide} );
 		this.object = new THREE.Mesh( geometry, material );
+		this.object.receiveShadow = true;
+		this.object.castShadow = true;
 		//Setup ComputationRenderer
 		this.gpuCompute = new GPUComputationRenderer(vertsX, vertsY, renderer);
 

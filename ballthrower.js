@@ -93,6 +93,7 @@ var BallThrower = function BallThrower(posX, posY, posZ, ballRadius, scene, rend
 			var sphere = new THREE.Mesh( geometry, material);
 			sphere.position.set(position.x,position.y,position.z);
 			array.push(sphere);
+			sphere.castShadow = true;
 			scene.add(sphere);
 		}
 

@@ -24,22 +24,34 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( 0x111111 );
 
-		this.renderer = new THREE.WebGLRenderer();
+		this.renderer = new THREE.WebGLRenderer({antialias: true});
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.BasicShadowMap;
+		//this.renderer.shadowMap.renderSingleSided = false;
 		this.canvas.appendChild( this.renderer.domElement );
 
 		var lightFL = new THREE.PointLight( 0xffffff, .7);
 		lightFL.position.set(-30,0,30);
+		lightFL.castShadow = true;
+		lightFL.shadow.camera.near = 10;
+		lightFL.shadow.camera.far = 100;
 		this.scene.add(lightFL);
 
-		var lightFR = new THREE.PointLight( 0xffffff, .2);
+		var lightFR = new THREE.PointLight( 0xffffff, .5);
 		lightFR.position.set(30,0,30);
+		lightFR.castShadow = true;
+		lightFR.shadow.camera.near = 10;
+		lightFR.shadow.camera.far = 100;
 		this.scene.add(lightFR);
 
 		var lightB = new THREE.PointLight( 0xffffff, .6 );
-		lightB.position.set(-15,0,-15);
+		lightB.position.set(-90,0,-90);
 		this.scene.add(lightB);
+
+
+
 
 		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
@@ -47,7 +59,6 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.ballthrower = new BallThrower(0, 0, 50, 2, this.scene, this.renderer);
 		this.raycaster = new THREE.Raycaster();
 		this.mouse = new THREE.Vector2();
-
 
 		this.last = 0;
 		this.now = 0;
