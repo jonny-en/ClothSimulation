@@ -6,10 +6,13 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		// =======================================================================//
 
 		//Init Cloth-Object
+
 		var facesX = vertsX-1;
 		var facesY = vertsY -1;
 		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
 		var material = new THREE.MeshPhongMaterial( {wireframe: false, color: 0xffff00, side: THREE.DoubleSide} );
+
+		this.color = 0xffff00;
 		this.object = new THREE.Mesh( geometry, material );
 		this.object.receiveShadow = true;
 		this.object.castShadow = true;
@@ -46,7 +49,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		var restX = width/facesX;
 		var restY = width/facesY;
 		var restDiagonal = Math.sqrt( restX * restX + restY * restY);
-		console.log(restDiagonal);
+		console.log(this.color[0]);
 		this.positionUniforms.restLenghts = {type: "v3", value: new THREE.Vector3( restX, restY, restDiagonal)};
 
 		//Init ComputationRenderer
@@ -76,6 +79,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 				this.object.geometry.attributes.position.array[ i+2 ] = newPos[ i+2 + i/3];
  			}
  			this.object.geometry.attributes.position.needsUpdate = true;
+ 			this.object.material.color = new THREE.Color( this.color );;
 		};
 
 
