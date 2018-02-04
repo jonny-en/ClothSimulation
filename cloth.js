@@ -42,12 +42,14 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.mass = {value: 1.0};
 		this.positionUniforms.gravity = {value: -0.00981};
 		this.positionUniforms.DAMPING = {value: -0.0125};
+		this.positionUniforms.pinned = { type: "v2v", value: [ 	new THREE.Vector2( 0., 0. ), 
+                                       							new THREE.Vector2( facesX, 0. ) ] };
 
 
 		var restX = width/facesX;
 		var restY = width/facesY;
 		var restDiagonal = Math.sqrt( restX * restX + restY * restY);
-		this.positionUniforms.restLenghts = {type: "v3", value: new THREE.Vector3( restX, restY, restDiagonal)};
+		this.positionUniforms.restLengths = {type: "v3", value: new THREE.Vector3( restX, restY, restDiagonal)};
 
 		//Init ComputationRenderer
 		var error = this.gpuCompute.init();
