@@ -10,7 +10,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		var facesX = vertsX-1;
 		var facesY = vertsY -1;
 		var geometry = new THREE.PlaneBufferGeometry( width, height, facesX ,facesY);
-		var material = new THREE.MeshPhongMaterial( {wireframe: false, color: 0xffff00, side: THREE.DoubleSide} );
+		var material = new THREE.MeshNormalMaterial( {wireframe: true, side: THREE.DoubleSide} );
 
 		this.color = 0xffff00;
 		this.object = new THREE.Mesh( geometry, material );
@@ -21,12 +21,10 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 
 		//Init Textures used for computation
 		var dtPosition = this.gpuCompute.createTexture();
-		var dtOldPosition = this.gpuCompute.createTexture();
 		fillPositionTexture(dtPosition, this.object.geometry.attributes.position.array);
-		fillPositionTexture(dtOldPosition, this.object.geometry.attributes.position.array);
 		//Init Variables with corresponding Shader
 		this.positionVariable = this.gpuCompute.addVariable("texturePosition", shaders.fs.POS, dtPosition);
-		this.oldPositionVariable = this.gpuCompute.addVariable("textureOldPosition", shaders.fs.OLD_POS, dtOldPosition);
+		this.oldPositionVariable = this.gpuCompute.addVariable("textureOldPosition", shaders.fs.OLD_POS, dtPosition);
 
 		this.oldPositionVariable.wrapS = THREE.RepeatWrapping;
 		this.oldPositionVariable.wrapT = THREE.RepeatWrapping;
@@ -49,7 +47,6 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		var restX = width/facesX;
 		var restY = width/facesY;
 		var restDiagonal = Math.sqrt( restX * restX + restY * restY);
-		console.log(this.color[0]);
 		this.positionUniforms.restLenghts = {type: "v3", value: new THREE.Vector3( restX, restY, restDiagonal)};
 
 		//Init ComputationRenderer
@@ -71,6 +68,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 
 			//Draw new Values
 			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
+			
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
 			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
@@ -78,8 +76,15 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 				this.object.geometry.attributes.position.array[ i+1 ] = newPos[ i+1 + i/3];
 				this.object.geometry.attributes.position.array[ i+2 ] = newPos[ i+2 + i/3];
  			}
+ 			console.log("x: " + this.object.geometry.attributes.position.array[3]);
+ 			//console.log("y" + this.object.geometry.attributes.position.array[4]);
+ 			//console.log("z" + this.object.geometry.attributes.position.array[5]);
+
  			this.object.geometry.attributes.position.needsUpdate = true;
- 			this.object.material.color = new THREE.Color( this.color );;
+ 			this.object.geometry.computeVertexNormals();
+ 			this.object.geometry.attributes.normal.needsUpdate = true;
+ 			//this.object.material.color = new THREE.Color( this.color );;
+
 		};
 
 

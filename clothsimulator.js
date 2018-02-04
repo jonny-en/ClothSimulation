@@ -6,7 +6,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		// =======================================================================//
 
 		//Cloth Size. Amount of Vectors will be size*size. Should be power of 2.
-		var CLOTH_SIZE = 32;
+		var CLOTH_SIZE = 64;
 
 		// =======================================================================//
 		// Initialising						        				     		  //
@@ -27,7 +27,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.renderer = new THREE.WebGLRenderer({antialias: true});
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-		this.renderer.shadowMap.enabled = true;
+		//this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = THREE.BasicShadowMap;
 		//this.renderer.shadowMap.renderSingleSided = false;
 		this.canvas.appendChild( this.renderer.domElement );
@@ -37,7 +37,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		lightFL.castShadow = true;
 		lightFL.shadow.camera.near = 10;
 		lightFL.shadow.camera.far = 100;
-		this.scene.add(lightFL);
+		//this.scene.add(lightFL);
 
 		var lightFR = new THREE.PointLight( 0xffffff, .5);
 		lightFR.position.set(30,0,30);
@@ -51,7 +51,7 @@ var ClothSimulator = function ClothSimulator(canvas) {
 		this.scene.add(lightB);
 
 
-		this.cloth = new Cloth(50,50,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
+		this.cloth = new Cloth(60.0,60.0,CLOTH_SIZE,CLOTH_SIZE, this.renderer);
 		this.scene.add(this.cloth.object);
 
 		this.ballthrower = new BallThrower(0, 0, 50, 2, this.scene, this.renderer);

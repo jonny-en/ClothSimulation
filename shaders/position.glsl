@@ -8,10 +8,15 @@ uniform vec3 restLenghts; //Spring coefficents
 
 vec3 calculateTranslation(vec3 p1,vec3 p2,float restLength){
 	vec3 dist = p1 - p2;
-	float dAbs = length(dist);
-	float s = (restLength - dAbs)/dAbs;
+	float dAbs = distance(p1,p2);
+	float s = 0.;
+	if(dAbs != 0.){
+	s = (restLength - dAbs)/dAbs;
+	}
 
 	vec3 t = dist * 0.5  * s;
+
+
 	return t;
 }
 
@@ -25,7 +30,7 @@ vec3 solveCollisions(vec3 position, vec2 uv){
 			{
 				vec2 tempUV = vec2(float(i)/(resolution.x) + (1./(resolution.x*2.)) ,
 				float(j)/(resolution.y) + (1./(resolution.y*2.)));
-				if(!(uv == tempUV)){
+				if(uv != tempUV){
 				vec3 p2 = texture2D(texturePosition, tempUV).xyz;
 				vec3 dist = p1 - p2;
 				float dAbs = length(dist);
@@ -50,32 +55,32 @@ vec3 checkConstraints(vec2 uv, vec3 position){
 	if(!(uv.x == 1./2.* stepSizeX)) // left border of mesh
 	{
 		p2 = texture2D(texturePosition, vec2(uv.x-stepSizeX,uv.y)).xyz;
-			t += (calculateTranslation(position, p2,restLengthX));
-			//shearing constraints
-			if(!(uv.y == 1./2.*stepSizeY)){
-				p2 = texture2D(texturePosition, vec2(uv.x - stepSizeX, uv.y - stepSizeY)).xyz;
-				t += calculateTranslation(position, p2, restLengthDiag);
-			}
-			 if(!(uv.y == (1.0-1./2.*stepSizeY))){
-				p2 = texture2D(texturePosition, vec2(uv.x - stepSizeX, uv.y + stepSizeY)).xyz;
-				t += calculateTranslation(position, p2, restLengthDiag);
-			}
-			// Bending checkConstraints
-			if(!(uv.x <= stepSizeX + (1./2.*stepSizeX))){
-				p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX,uv.y)).xyz;
-				t += calculateTranslation(position, p2, 2.*restLengthX);
+		t += (calculateTranslation(position, p2,restLengthX));
+		//shearing constraints
+		if(!(uv.y == 1./2.*stepSizeY)){
+			p2 = texture2D(texturePosition, vec2(uv.x - stepSizeX, uv.y - stepSizeY)).xyz;
+			t += calculateTranslation(position, p2, restLengthDiag);
+		}
+		if(!(uv.y == (1.-1./2.*stepSizeY))){
+			p2 = texture2D(texturePosition, vec2(uv.x - stepSizeX, uv.y + stepSizeY)).xyz;
+			t += calculateTranslation(position, p2, restLengthDiag);
+		}
+		// Bending checkConstraints
+		if(!(uv.x <= stepSizeX + (1./2.*stepSizeX))){
+			p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX,uv.y)).xyz;
+			t += calculateTranslation(position, p2, 2.*restLengthX);
 
-				if(!(uv.y <= stepSizeY + (1./2.*stepSizeY))){
-					p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX, uv.y - 2.*stepSizeY)).xyz;
-					t += calculateTranslation(position, p2, 2.*restLengthDiag);
-				}
-				 if(!(uv.y>= 1.0 - stepSizeY - (1./2.*stepSizeY))){
-					p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX, uv.y + 2.*stepSizeY)).xyz;
-					t += calculateTranslation(position, p2, 2.*restLengthDiag);
+			if(!(uv.y <= stepSizeY + (1./2.*stepSizeY))){
+				p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX, uv.y - 2.*stepSizeY)).xyz;
+				t += calculateTranslation(position, p2, 2.*restLengthDiag);
+			}
+			if(!(uv.y>= 1.0 - stepSizeY - (1./2.*stepSizeY))){
+				p2 = texture2D(texturePosition, vec2(uv.x - 2.*stepSizeX, uv.y + 2.*stepSizeY)).xyz;
+				t += calculateTranslation(position, p2, 2.*restLengthDiag);
 				}
 			}
 	}
-	if(!(uv.x == (1.0-1./2.*stepSizeX))) // right border of mesh
+	if(!(uv.x == (1.-1./2.*stepSizeX))) // right border of mesh
 	{
 		p2 = texture2D(texturePosition, vec2(uv.x+stepSizeX,uv.y)).xyz;
 		t += calculateTranslation(position, p2, restLengthX);
@@ -85,8 +90,8 @@ vec3 checkConstraints(vec2 uv, vec3 position){
 			p2 = texture2D(texturePosition, vec2(uv.x + stepSizeX, uv.y - stepSizeY)).xyz;
 			t += calculateTranslation(position, p2, restLengthDiag);
 		}
-		 if(!(uv.y == (1.0-1./2.*stepSizeY))){
-			p2 = texture2D(texturePosition, vec2(uv.x + (1./resolution.x), uv.y + (1./resolution.y))).xyz;
+		 if(!(uv.y == (1.-1./2.*stepSizeY))){
+			p2 = texture2D(texturePosition, vec2(uv.x + stepSizeX, uv.y + stepSizeY)).xyz;
 			t += calculateTranslation(position, p2, restLengthDiag);
 		}
 
@@ -112,23 +117,21 @@ vec3 checkConstraints(vec2 uv, vec3 position){
 	}
 	if(!(uv.y == 1./2.*stepSizeY)) // top border of mesh
 	{
-		p2 = texture2D(texturePosition, vec2(uv.x,uv.y-(1.0/resolution.y))).xyz;
+		p2 = texture2D(texturePosition, vec2(uv.x,uv.y-stepSizeY)).xyz;
 		t += calculateTranslation(position, p2, restLengthY);
 	}
 
-
-
-
-if(!(uv.y <= stepSizeY + (1./2.*stepSizeY))){
-	p2 = texture2D(texturePosition, vec2(uv.x,uv.y - 2.*stepSizeY)).xyz;
-	t += calculateTranslation(position, p2, 2.*restLengthY);
-}
-if(!(uv.y >= 1.0 - stepSizeY - (1./2.*stepSizeY))){
-	p2 = texture2D(texturePosition, vec2(uv.x,uv.y + 2.*stepSizeY)).xyz;
-	t += calculateTranslation(position, p2, 2.*restLengthY);
-}
+	if(!(uv.y <= stepSizeY + (1./2.*stepSizeY))){
+		p2 = texture2D(texturePosition, vec2(uv.x,uv.y - 2.*stepSizeY)).xyz;
+		t += calculateTranslation(position, p2, 2.*restLengthY);
+	}
+	if(!(uv.y >= 1.0 - stepSizeY - (1./2.*stepSizeY))){
+		p2 = texture2D(texturePosition, vec2(uv.x,uv.y + 2.*stepSizeY)).xyz;
+		t += calculateTranslation(position, p2, 2.*restLengthY);
+	}
 
 	return t;
+
 }
 
 
@@ -138,25 +141,26 @@ void main()	{
 	float ownMass = mass;
 	vec3 position = texture2D( texturePosition, uv ).xyz;
 	vec3 oldPosition = texture2D( textureOldPosition, uv ).xyz;
-	vec3 gravityVec = vec3(0.001,-0.000981,-0.0009);
+	vec3 gravityVec = vec3((sin(time/1000.)+1.)/100.,-0.09,(sin(time/1000.)-1.)/100.);
 	vec3 velocity = (position - oldPosition) / delta;
 
 	//fix top row so it does not move
 
 	vec3 force = gravityVec*ownMass + velocity*DAMPING;
-vec3 acceleration = force/ownMass;
-
+	vec3 acceleration = force/ownMass;
+	vec3 t;
 	vec3 newPosition = position;
+	
 	if(!(uv.y == 1.0/(2.0*resolution.y) && (uv.x == 1.0/(2.0*resolution.x)||uv.x == (1.- 1.0/(2.0*resolution.x)))) ){
 		newPosition =  (position * 2.0 - oldPosition + acceleration * delta *delta);
-		newPosition = solveCollisions(newPosition,uv);
+		//newPosition = solveCollisions(newPosition,uv);
 
-		vec3 t = checkConstraints(uv, newPosition);
-		newPosition += t/10.;
+		t = checkConstraints(uv, newPosition);
+		newPosition += t/12.;
 
 
 	}
 
 
-		gl_FragColor = vec4(newPosition,1 );
+		gl_FragColor = vec4(newPosition, 1 );
 }
