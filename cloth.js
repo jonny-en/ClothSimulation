@@ -42,7 +42,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 		this.positionUniforms.mass = {value: 1.0};
 		this.positionUniforms.gravity = {value: -0.00981};
 		this.positionUniforms.DAMPING = {value: -0.0125};
-		this.positionUniforms.pinned = { type: "v2v", value: [ 	new THREE.Vector2( 0., 0. ), 
+		this.positionUniforms.pinned = { type: "v2v", value: [ 	new THREE.Vector2( 0., 0. ),
                                        							new THREE.Vector2( facesX, 0. ) ] };
 
 
@@ -70,7 +70,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 
 			//Draw new Values
 			var newPos = new Float32Array(this.positionVariable.initialValueTexture.image.width * this.positionVariable.initialValueTexture.image.height * 4);
-			
+
 			var target = this.gpuCompute.getCurrentRenderTarget( this.positionVariable );
 			renderer.readRenderTargetPixels(target,0,0,this.positionVariable.initialValueTexture.image.width,this.positionVariable.initialValueTexture.image.height, newPos);
 			for(var i=0; i < this.object.geometry.attributes.position.array.length-2; i += 3){
@@ -78,7 +78,7 @@ var Cloth = function Cloth(width, height, vertsX, vertsY, renderer) {
 				this.object.geometry.attributes.position.array[ i+1 ] = newPos[ i+1 + i/3];
 				this.object.geometry.attributes.position.array[ i+2 ] = newPos[ i+2 + i/3];
  			}
- 			console.log("x: " + this.object.geometry.attributes.position.array[3]);
+ 			//console.log( this.object.geometry.attributes.position.array);
  			//console.log("y" + this.object.geometry.attributes.position.array[4]);
  			//console.log("z" + this.object.geometry.attributes.position.array[5]);
 
