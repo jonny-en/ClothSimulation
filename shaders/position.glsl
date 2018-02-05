@@ -29,8 +29,9 @@ vec3 calculateTranslation(vec3 p1, vec2 neighborCoord ,float restLength){
 	return t;
 }
 
-//get requested neighbor point
-vec3 getNeighbors(vec2 coord, vec3 restLengths,int i){
+
+//check, if contraints are broken and apply correction
+vec3 checkConstraints(vec2 coord, vec3 position){
 	vec2 neighborCoords[16];
 	 neighborCoords[0] = vec2(1.,0.);
 	 neighborCoords[1] = vec2(0.,1.);
@@ -49,39 +50,6 @@ vec3 getNeighbors(vec2 coord, vec3 restLengths,int i){
 	 neighborCoords[14] = vec2(-2.,2.);
 	 neighborCoords[15] = vec2(-2.,-2.);
 
-// Workaround to access array with const index
-for(int x = 0; x < 16; x++){
-	if(x == i){
-		float tempX = coord.x + neighborCoords[x].x;
-		float tempY = coord.y + neighborCoords[x].y;
-		vec2 neighbor = vec2(tempX,tempY);
-
-		if(tempX >= 0.5 && tempX <= resolution.x - 0.5 && tempY >= 0.5 && tempY <= resolution.y - 0.5 ){
-
-			if(x < 4){
-				if(!(neighborCoords[x].x == 0.)){
-					return vec3(neighbor,restLengths.x);
-				}else {
-					return vec3(neighbor,restLengths.y);
-				}
-			}else if(x < 8){
-				return  vec3(neighbor,restLengths.z);
-			}else if(x < 12){
-				if(!(neighborCoords[x].x == 0.)){
-					return vec3(neighbor,2.*restLengths.x);
-				}else {
-					return vec3(neighbor,2.*restLengths.y);
-				}
-			}else if(x < 16){
-				return vec3(neighbor,2.*restLengths.z);
-			}
-		}}}
-
-
-}
-
-//check, if contraints are broken and apply correction
-vec3 checkConstraints(vec2 coord, vec3 position){
 	vec3 t = vec3(0.0);
 	vec3 p2 = position;
 vec3 neighbors[16];
@@ -89,8 +57,32 @@ vec3 neighbors[16];
 		neighbors[i].xy = vec2(0.0,0.0);
 	}
 	for(int i = 0; i < 16; i++){
-		neighbors[i] = getNeighbors(coord, restLengths, i);
+		float tempX = coord.x + neighborCoords[i].x;
+		float tempY = coord.y + neighborCoords[i].y;
+		vec2 neighbor = vec2(tempX,tempY);
+
+		if(tempX >= 0.5 && tempX <= resolution.x - 0.5 && tempY >= 0.5 && tempY <= resolution.y - 0.5 ){
+
+			if(i < 4){
+				if(!(neighborCoords[i].x == 0.)){
+					neighbors[i] = vec3(neighbor,restLengths.x);
+				}else {
+					neighbors[i] = vec3(neighbor,restLengths.y);
+				}
+			}else if(i < 8){
+				neighbors[i] =  vec3(neighbor,restLengths.z);
+			}else if(i < 12){
+				if(!(neighborCoords[i].x == 0.)){
+					neighbors[i] = vec3(neighbor,2.*restLengths.x);
+				}else {
+					neighbors[i] = vec3(neighbor,2.*restLengths.y);
+				}
+			}else if(i < 16){
+				neighbors[i] = vec3(neighbor,2.*restLengths.z);
+			}
+		}
 	}
+	
 for(int i = 0; i < 16; i ++){
 	if(neighbors[i].xy != vec2(0.0,0.0)){
 		t+= calculateTranslation(position, neighbors[i].xy, neighbors[i].z);
